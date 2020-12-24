@@ -7,15 +7,20 @@ class FwdList
 {
 public:
 	FwdList() = default;
-	void pushFront(const T& data);
-	void print()const;
+	void pushFront(const T& data); //addtoHead
+	void print()const; // Show
 	void eraseFront();
-	void pushAfter(const T& searchData,const T& data);
+	void pushAfter(const T& searchData,const T& data);// вставка нового елемента після заданого
 	void clear();
 	void eraseAfter(const T& searchData);
-	void eraseTail();
-	void addTail(const T& data);
-
+	void eraseTail(); //deleteFromTail 
+	size_t findAndReplace(const T& searchData,const T& data);
+	void addTail(const T& data); //addToTail
+	void deleteElemWithData(const T& data);
+	void reverseList();
+	FwdList(const FwdList& other);
+	FwdList& operator=(const FwdList& other);
+	bool operator==(const FwdList& other);
 	~FwdList();
 private:
 	auto findNode(const T& data);
@@ -118,22 +123,62 @@ inline void FwdList<T>::eraseAfter(const T& searchData)
 template<typename T>
 inline void FwdList<T>::eraseTail()
 {
-	Node* tmp=head;
+	
 	if (!isEmpty())
 	{
-		while (next!=tail)
+		Node* tmp = head;
+		if (tmp->next==nullptr)
 		{
-			tmp = next;
+			tail = nullptr;
+			head = nullptr;
+			return;
 		}
-		tmp->
+		while (tmp->next != tail)
+		{
+			tmp = tmp->next;
+		}
+		delete tmp->next;
+		tail = tmp;
+		tmp->next = nullptr;
+	//delete tmp->next;
+	//	delete tmp->next;
+	
 	}
+
+}
+
+template<typename T>
+inline size_t FwdList<T>::findAndReplace(const T& searchData, const T& data)
+{
+	size_t count = 0;
+	if (isEmpty())
+	{
+		return 0;
+	}
+	Node* tmp = head;
+	
+	while (tmp != tail)
+	{
+		if (tmp->data==searchData)
+		{
+			tmp->data = data;
+			++count;
+		}
+		tmp = tmp->next;
+	}
+	if (tail->data == searchData)
+	{
+		tail->data = data;
+		++count;
+	}
+	return count;
 }
 
 template<typename T>
 inline void FwdList<T>::addTail(const T& data)
 {
 	Node* add = new Node(data);
-	if (!isEmpty)
+	if (!isEmpty())
 	{
 		tail->next = add;
 	}
@@ -142,6 +187,108 @@ inline void FwdList<T>::addTail(const T& data)
 	}
 	tail = add;
 }
+
+template<typename T>
+inline void FwdList<T>::deleteElemWithData(const T& data)
+{
+	if (isEmpty())
+	{
+		return;
+	}
+	Node* tmp = head;
+	while (tmp != nullptr && tmp->next->data != data)
+	{
+		tmp = tmp->next;
+	}
+	if (tmp != nullptr)
+	{
+	
+		if (tmp->next!=tail)
+		{
+			tmp->next=tmp->next->next;
+		}
+		else if (tmp==head && tmp->next==tail)
+		{
+			tail = nullptr;
+			head = nullptr;
+		}
+		else {
+			tail = nullptr;
+		}
+	}
+	tmp = nullptr;
+}
+
+template<typename T>
+inline void FwdList<T>::reverseList()
+{
+	if (isEmpty())
+	{
+		return;
+	}
+	if (head->next==nullptr)
+	{
+		return;
+	}
+	Node* tmp=head;
+	Node* tmp2=nullptr;
+	Node* list;
+	while (tmp!=nullptr)
+	{
+		list = tmp;
+		tmp = tmp->next;
+		list->next = tmp2;
+		tmp2 =list ;
+	}
+	head = tmp2;
+	}
+
+template<typename T>
+inline FwdList<T>::FwdList(const FwdList& other)
+{
+//	this->addTail(other.head->data);
+	Node* tmp = other.head;
+	while (tmp!=nullptr)
+	{
+		this->addTail(tmp->data);
+		tmp = tmp->next;
+	}
+
+}
+
+template<typename T>
+inline FwdList<T>& FwdList<T>::operator=(const FwdList& other)
+{
+	Node* tmp = other.head;
+	while (tmp != nullptr)
+	{
+		this->addTail(tmp->data);
+		tmp = tmp->next;
+	}
+	return *this;
+}
+
+template<typename T>
+inline bool FwdList<T>::operator==(const FwdList& other)
+{
+	if (isEmpty() || other.isEmpty() )
+	{
+		return false;
+	}
+	Node* tmp = head;
+	Node* other_tmp = other.head;
+	while (tmp!=nullptr)
+	{
+		if (tmp->data != other_tmp->data)
+		{
+			return false;
+		}
+		tmp=tmp->next;
+		other_tmp=other_tmp->next;
+	}
+	return true;
+}
+
 
 template<typename T>
 inline FwdList<T>::~FwdList()
